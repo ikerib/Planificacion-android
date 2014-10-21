@@ -47,7 +47,7 @@ public class MyActivity extends Activity {
 
     private ProgressDialog pDialog;
     // URL to get contacts JSON
-    private static String url = "http://10.0.2.2:8081/api/getplanificacion/2014-10-20";
+    private static String base_url = "http://10.0.2.2:8081/api/getplanificacion/";
 
     // JSON Node names
     private static final String TAG_REF = "ref";
@@ -69,8 +69,10 @@ public class MyActivity extends Activity {
 
         list=(ListView)findViewById(android.R.id.list);
 
+        String url = base_url + "2014-10-20";
+
         // Calling async task to get json
-        new GetOfs().execute();
+        new GetOfs().execute(url);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -86,7 +88,7 @@ public class MyActivity extends Activity {
     /**
      * Async task class to get json by making HTTP call
      * */
-    private class GetOfs extends AsyncTask<Void, Void, Void> {
+    private class GetOfs extends AsyncTask<String, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -100,12 +102,14 @@ public class MyActivity extends Activity {
         }
 
         @Override
-        protected Void doInBackground(Void... arg0) {
+        protected Void doInBackground(String... params) {
             // Creating service handler class instance
+            Log.e("IKER",params[0]);
+            String miurl = params[0];
             Servicioweb sh = new Servicioweb();
 
             // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall(url, Servicioweb.GET);
+            String jsonStr = sh.makeServiceCall(miurl, Servicioweb.GET);
 
             Log.d("Response: ", "> " + jsonStr);
 
