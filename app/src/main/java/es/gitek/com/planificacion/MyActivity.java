@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,6 +66,7 @@ public class MyActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
+   
         ofList = new ArrayList<HashMap<String, String>>();
 
         list=(ListView)findViewById(android.R.id.list);
@@ -103,19 +105,15 @@ public class MyActivity extends Activity {
 
         @Override
         protected Void doInBackground(String... params) {
-            // Creating service handler class instance
-            Log.e("IKER",params[0]);
+
             String miurl = params[0];
             Servicioweb sh = new Servicioweb();
 
             // Making a request to url and getting response
             String jsonStr = sh.makeServiceCall(miurl, Servicioweb.GET);
 
-            Log.d("Response: ", "> " + jsonStr);
-
             if (jsonStr != null) {
                 try {
-                    //JSONObject jsonObj = new JSONObject(jsonStr);
                     JSONArray jsonArr = new JSONArray(jsonStr);
 
                     for (int i=0; i < jsonArr.length(); i++) {
@@ -145,7 +143,7 @@ public class MyActivity extends Activity {
                     e.printStackTrace();
                 }
             } else {
-                Log.e("ServiceHandler", "Couldn't get any data from the url");
+                Log.e("Servicioweb", "Ez da daturik aurkitu.");
             }
 
             return null;
@@ -154,7 +152,7 @@ public class MyActivity extends Activity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            // Dismiss the progress dialog
+
             if (pDialog.isShowing())
                 pDialog.dismiss();
             /**
