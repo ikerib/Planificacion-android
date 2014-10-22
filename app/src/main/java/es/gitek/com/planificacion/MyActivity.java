@@ -1,18 +1,21 @@
 package es.gitek.com.planificacion;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,14 +25,13 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class MyActivity extends Activity {
+public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeInterface {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -48,30 +50,42 @@ public class MyActivity extends Activity {
 
     private ProgressDialog pDialog;
     // URL to get contacts JSON
-    private static String base_url = "http://10.0.2.2:8081/api/getplanificacion/";
+    private static String base_url = "http://superlinea.grupogureak.com:8081/api/getplanificacion/";
 
     // JSON Node names
     private static final String TAG_REF = "ref";
+    private static final String TAG_LINEA = "linea";
 
     // contacts JSONArray
     JSONArray contacts = null;
 
     // Hashmap for ListView
     ArrayList<HashMap<String, String>> ofList;
+    ArrayList<HashMap<String, String>> lLinea1;
+    ArrayList<HashMap<String, String>> lLinea2;
+    ArrayList<HashMap<String, String>> lLinea3;
     private ListView list;
-
+    private Date gaur;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
-   
+        Calendar c = Calendar.getInstance();
+        gaur = c.getTime();
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String eguna = df.format(c.getTime());
+
+
+        setTitle(eguna);
+
         ofList = new ArrayList<HashMap<String, String>>();
 
         list=(ListView)findViewById(android.R.id.list);
 
-        String url = base_url + "2014-10-20";
+        String url = base_url + eguna;
 
         // Calling async task to get json
         new GetOfs().execute(url);
@@ -83,6 +97,7 @@ public class MyActivity extends Activity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOnTouchListener(new ActivitySwipeDetector(this, MyActivity.this));
 
     }
 
@@ -114,12 +129,20 @@ public class MyActivity extends Activity {
 
             if (jsonStr != null) {
                 try {
+                    ofList.clear();
                     JSONArray jsonArr = new JSONArray(jsonStr);
+
+                    lLinea1 = new ArrayList<HashMap<String, String>>();
+                    lLinea2 = new ArrayList<HashMap<String, String>>();
+                    lLinea3 = new ArrayList<HashMap<String, String>>();
+
 
                     for (int i=0; i < jsonArr.length(); i++) {
 
                         JSONObject miof = jsonArr.getJSONObject(i);
-                        String miref = miof.getString(TAG_REF).replace("<br >","<br/>").replace("<BR >","<br/>").replace("< br>","<br/>").replace("< BR>","<br/>").replace("< br >","<br/>").replace("<br>","<br/>");
+
+
+                        String miref = miof.getString(TAG_REF).replace("<br >","<br/>").replace("<BR >","<br/>").replace("< br>","<br/>").replace("< BR>","<br/>").replace("< br >","<br/>").replace("<br>","<br/>").replace("<BR>","<br/>");
 
 
                         String[] separated = miref.split("<br/>");
@@ -137,8 +160,60 @@ public class MyActivity extends Activity {
                         orden.put("ref",ref);
                         orden.put("of",of);
 
-                        ofList.add(orden);
+                        switch(Integer.parseInt(miof.getString(TAG_LINEA).toString())) {
+                            case 1:
+                                lLinea1.add(orden);
+                                break;
+                            case 2:
+                                lLinea2.add(orden);
+                                break;
+                            case 3:
+                                lLinea3.add(orden);
+                        }
                     }
+
+                    if (lLinea1.size() > 0) {
+                        HashMap<String, String> orden = new HashMap<String, String>();
+                        orden.put("ref","====== SIPLACE ======");
+                        orden.put("of","---");
+                        ofList.add(orden);
+
+                        int size = lLinea1.size();
+
+                        for(int j = 0; j < size; j++) {
+                            ofList.add(lLinea1.get(j));
+                        }
+                    }
+
+                    if (lLinea2.size() > 0) {
+                        HashMap<String, String> orden = new HashMap<String, String>();
+                        orden.put("ref","====== ASSAMBLEON ======");
+                        orden.put("of","---");
+                        ofList.add(orden);
+
+                        int size = lLinea2.size();
+
+                        for(int j = 0; j < size; j++) {
+                            ofList.add(lLinea2.get(j));
+                        }
+                    }
+
+                    if (lLinea3.size() > 0) {
+                        HashMap<String, String> orden = new HashMap<String, String>();
+                        orden.put("ref","======= MONTAJE ======");
+                        orden.put("of","---");
+                        ofList.add(orden);
+
+                        int size = lLinea3.size();
+
+                        for(int j = 0; j < size; j++) {
+                            ofList.add(lLinea3.get(j));
+                        }
+                    }
+
+
+
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -158,11 +233,14 @@ public class MyActivity extends Activity {
             /**
              * Updating parsed JSON data into ListView
              * */
+
+            list=(ListView)findViewById(android.R.id.list);
+
+
             ListAdapter adapter = new SimpleAdapter(
                     MyActivity.this, ofList,
                        R.layout.of_list_item, new String[] { "ref","of" }, new int[] { R.id.ref, R.id.of });
 
-            list=(ListView)findViewById(android.R.id.list);
 
             list.setAdapter(adapter);
 
@@ -183,13 +261,64 @@ public class MyActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_refresh) {
+            //Calendar c = Calendar.getInstance();
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd");
+            String eguna = df.format(gaur.getTime());
+            String url = base_url + eguna;
+
+            new GetOfs().execute(url);
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onLeftToRight(View v)
+    {
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setCurrentItem(0);
 
+        Date dtStartDate=gaur;
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        c.setTime(dtStartDate);
+        c.add(Calendar.DATE, -1);  // number of days to add
+
+        String eguna = df.format(c.getTime());
+        gaur = c.getTime();
+
+        setTitle(eguna);
+
+        String url = base_url + eguna;
+
+        // Calling async task to get json
+        new GetOfs().execute(url);
+
+    }
+
+    @Override
+    public void onRightToLeft(View v)
+    {
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setCurrentItem(0);
+
+        Date dtStartDate=gaur;
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        c.setTime(dtStartDate);
+        c.add(Calendar.DATE, 1);  // number of days to add
+
+        String eguna = df.format(c.getTime());
+        gaur = c.getTime();
+
+        setTitle(eguna);
+
+        String url = base_url + eguna;
+
+        // Calling async task to get json
+        new GetOfs().execute(url);
+    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -211,7 +340,7 @@ public class MyActivity extends Activity {
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 1;
         }
 
         @Override
