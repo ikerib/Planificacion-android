@@ -50,10 +50,12 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
 
     private ProgressDialog pDialog;
     // URL to get contacts JSON
-    private static String base_url = "http://superlinea.grupogureak.com:8081/api/getplanificacion/";
+//    private static String base_url = "http://superlinea.grupogureak.com:8081/api/getplanificacion/";
+    private static String base_url = "http://gitek2.grupogureak.com/api/getplanificacion/";
 
     // JSON Node names
     private static final String TAG_REF = "ref";
+    private static final String TAG_AMAITUTA = "amaituta";
     private static final String TAG_LINEA = "linea";
 
     // contacts JSONArray
@@ -143,7 +145,7 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
 
 
                         String miref = miof.getString(TAG_REF).replace("<br >","<br/>").replace("<BR >","<br/>").replace("< br>","<br/>").replace("< BR>","<br/>").replace("< br >","<br/>").replace("<br>","<br/>").replace("<BR>","<br/>");
-
+                        String amaituta = miof.getString(TAG_AMAITUTA);
 
                         String[] separated = miref.split("<br/>");
                         String ref="";
@@ -159,6 +161,7 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
                         HashMap<String, String> orden = new HashMap<String, String>();
                         orden.put("ref",ref);
                         orden.put("of",of);
+                        orden.put("amaituta",amaituta);
 
                         switch(Integer.parseInt(miof.getString(TAG_LINEA).toString())) {
                             case 1:
@@ -176,6 +179,7 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
                         HashMap<String, String> orden = new HashMap<String, String>();
                         orden.put("ref","====== SIPLACE ======");
                         orden.put("of","---");
+                        orden.put("amaituta","0");
                         ofList.add(orden);
 
                         int size = lLinea1.size();
@@ -189,6 +193,7 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
                         HashMap<String, String> orden = new HashMap<String, String>();
                         orden.put("ref","====== ASSAMBLEON ======");
                         orden.put("of","---");
+                        orden.put("amaituta","0");
                         ofList.add(orden);
 
                         int size = lLinea2.size();
@@ -202,6 +207,7 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
                         HashMap<String, String> orden = new HashMap<String, String>();
                         orden.put("ref","======= MONTAJE ======");
                         orden.put("of","---");
+                        orden.put("amaituta","0");
                         ofList.add(orden);
 
                         int size = lLinea3.size();
@@ -234,19 +240,24 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
              * Updating parsed JSON data into ListView
              * */
 
+//            list=(ListView)findViewById(android.R.id.list);
+
+
+//            ListAdapter adapter = new SimpleAdapter(
+//                    MyActivity.this, ofList,
+//                       R.layout.of_list_item, new String[] { "ref","of", "amaituta" }, new int[] { R.id.ref, R.id.of, R.id.amaituta });
+//
+//
+//            list.setAdapter(adapter);
+
             list=(ListView)findViewById(android.R.id.list);
-
-
-            ListAdapter adapter = new SimpleAdapter(
-                    MyActivity.this, ofList,
-                       R.layout.of_list_item, new String[] { "ref","of" }, new int[] { R.id.ref, R.id.of });
-
-
+            CustomAdapter adapter = new CustomAdapter(MyActivity.this, ofList);
             list.setAdapter(adapter);
 
         }
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
