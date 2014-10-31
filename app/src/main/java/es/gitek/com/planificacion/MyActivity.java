@@ -13,13 +13,16 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
+import android.support.v4.content.WakefulBroadcastReceiver;
 import android.support.v4.view.ViewPager;
 import android.text.format.Time;
 import android.util.Log;
@@ -601,5 +604,17 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
         editor.putString(PROPERTY_REG_ID, regId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
         editor.commit();
+    }
+
+    public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Explicitly specify that GcmIntentService will handle the intent.
+            ComponentName comp = new ComponentName(context.getPackageName(),
+                    GcmIntentService.class.getName());
+            // Start the service, keeping the device awake while it is launching.
+            startWakefulService(context, (intent.setComponent(comp)));
+            setResultCode(Activity.RESULT_OK);
+        }
     }
 }
