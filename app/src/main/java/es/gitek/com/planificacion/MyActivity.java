@@ -1,11 +1,14 @@
 package es.gitek.com.planificacion;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,6 +42,15 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -586,7 +598,34 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
      * using the 'from' address in the message.
      */
     private void sendRegistrationIdToBackend() {
-        // Your implementation here.
+        URI url = null;
+        try {
+            url = new URI("http://10.241.90.32/app_dev.php/api/v1/registerphones");
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpPost request = new HttpPost();
+        request.setURI(url);
+
+        try {
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            nameValuePairs.add(new BasicNameValuePair("androidid", regid ));
+            nameValuePairs.add(new BasicNameValuePair("androiduser", "user3"));
+            request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+            HttpResponse response = httpclient.execute(request);
+
+            Log.e("IKER",response.toString());
+
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -606,15 +645,4 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
         editor.commit();
     }
 
-    public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Explicitly specify that GcmIntentService will handle the intent.
-            ComponentName comp = new ComponentName(context.getPackageName(),
-                    GcmIntentService.class.getName());
-            // Start the service, keeping the device awake while it is launching.
-            startWakefulService(context, (intent.setComponent(comp)));
-            setResultCode(Activity.RESULT_OK);
-        }
-    }
 }
