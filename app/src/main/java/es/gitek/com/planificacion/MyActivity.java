@@ -234,7 +234,13 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
 
 
                         String miref = miof.getString(TAG_REF).replace("<br >","<br/>").replace("<BR >","<br/>").replace("< br>","<br/>").replace("< BR>","<br/>").replace("< br >","<br/>").replace("<br>","<br/>").replace("<BR>","<br/>");
-                        String amaituta = miof.getString(TAG_AMAITUTA);
+                        String amaituta;
+                        if(miof.has(TAG_AMAITUTA)) {
+                            amaituta = miof.getString(TAG_AMAITUTA);
+                        } else {
+                            amaituta="0";
+                        }
+
 
                         String[] separated = miref.split("<br/>");
                         String ref="";
