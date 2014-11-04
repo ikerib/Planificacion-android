@@ -26,13 +26,20 @@ android:paddingRight="10dp" >
     android:paddingBottom="2dip"
     android:textColor="#acacac" />
 
-    <TextView
-        android:id="@+id/amaituta"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="2dip"
-        android:textColor="#acacac"
-        android:visibility="gone"/>
+<TextView
+    android:id="@+id/denbora"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="2dip"
+    android:textColor="#acacac" />
+
+<TextView
+    android:id="@+id/amaituta"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="2dip"
+    android:textColor="#acacac"
+    android:visibility="gone"/>
 
 
 </LinearLayout>

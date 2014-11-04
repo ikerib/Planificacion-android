@@ -50,6 +50,7 @@ public class CustomAdapter extends BaseAdapter {
             holder.txtRef = (TextView) view.findViewById(R.id.ref);
             holder.txtOf = (TextView) view.findViewById(R.id.of);
             holder.txtAmaituta = (TextView) view.findViewById(R.id.amaituta);
+            holder.txtDenbora = (TextView) view.findViewById(R.id.denbora);
 
             view.setTag(holder);
         }else{
@@ -59,6 +60,12 @@ public class CustomAdapter extends BaseAdapter {
         holder.txtRef.setText(data.get(position).get("ref"));
         holder.txtOf.setText(data.get(position).get("of"));
         holder.txtAmaituta.setText(data.get(position).get("amaituta"));
+
+        if ( data.get(position).get("denbora").equals("0") ) {
+            holder.txtDenbora.setVisibility(View.GONE);
+        } else {
+            holder.txtDenbora.setText("Orduak : ".concat( data.get(position).get("denbora") ));
+        }
 
         if (data.get(position).get("amaituta").equals("1")) {
             holder.txtRef.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
@@ -75,6 +82,7 @@ public class CustomAdapter extends BaseAdapter {
         TextView txtRef;
         TextView txtOf;
         TextView txtAmaituta;
+        TextView txtDenbora;
     }
 
 }

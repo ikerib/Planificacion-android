@@ -81,6 +81,7 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
     // JSON Node names
     private static final String TAG_REF = "ref";
     private static final String TAG_AMAITUTA = "amaituta";
+    private static final String TAG_DENBORA = "denbora";
     private static final String TAG_LINEA = "linea";
 
     // PUSH NOTIFICATIONS
@@ -233,7 +234,11 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
                         JSONObject miof = jsonArr.getJSONObject(i);
 
 
-                        String miref = miof.getString(TAG_REF).replace("<br >","<br/>").replace("<BR >","<br/>").replace("< br>","<br/>").replace("< BR>","<br/>").replace("< br >","<br/>").replace("<br>","<br/>").replace("<BR>","<br/>");
+                        String miref = "";
+                        if ( miof.has(TAG_REF) ) {
+                            miref=miof.getString(TAG_REF).replace("<br >","<br/>").replace("<BR >","<br/>").replace("< br>","<br/>").replace("< BR>","<br/>").replace("< br >","<br/>").replace("<br>","<br/>").replace("<BR>","<br/>");
+                        }
+
                         String amaituta;
                         if(miof.has(TAG_AMAITUTA)) {
                             amaituta = miof.getString(TAG_AMAITUTA);
@@ -241,6 +246,12 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
                             amaituta="0";
                         }
 
+                        String denbora = "";
+                        if ( miof.has(TAG_DENBORA) ) {
+                            denbora = miof.getString(TAG_DENBORA);
+                        } else {
+                            denbora = "0";
+                        }
 
                         String[] separated = miref.split("<br/>");
                         String ref="";
@@ -257,6 +268,7 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
                         orden.put("ref",ref);
                         orden.put("of",of);
                         orden.put("amaituta",amaituta);
+                        orden.put("denbora",denbora);
 
                         switch(Integer.parseInt(miof.getString(TAG_LINEA).toString())) {
                             case 1:
@@ -275,6 +287,7 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
                         orden.put("ref","====== SIPLACE ======");
                         orden.put("of","---");
                         orden.put("amaituta","0");
+                        orden.put("denbora","0");
                         ofList.add(orden);
 
                         int size = lLinea1.size();
@@ -289,6 +302,7 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
                         orden.put("ref","====== ASSAMBLEON ======");
                         orden.put("of","---");
                         orden.put("amaituta","0");
+                        orden.put("denbora","0");
                         ofList.add(orden);
 
                         int size = lLinea2.size();
@@ -303,6 +317,7 @@ public class MyActivity extends Activity implements ActivitySwipeDetector.SwipeI
                         orden.put("ref","======= MONTAJE ======");
                         orden.put("of","---");
                         orden.put("amaituta","0");
+                        orden.put("denbora","0");
                         ofList.add(orden);
 
                         int size = lLinea3.size();
